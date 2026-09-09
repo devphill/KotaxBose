@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Long Beach — Kota The Friend × Bose</title>
+<title>Long Beach · Kota The Friend × Bose</title>
 <meta name="description" content="A song that never leaves the city. Long Beach, by Kota The Friend. Plays only through Bose.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +62,7 @@
   /* ─────────── main ─────────── */
   main{position:relative; z-index:2; flex:1; display:flex; align-items:center; padding:clamp(16px,3vw,40px) 0}
   .grid{
-    display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+    display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
     gap:clamp(32px,6vw,88px); align-items:center; width:100%;
   }
 
@@ -165,7 +165,7 @@
   .bar-fill{height:100%; width:0%; background:var(--yellow); border-radius:2px; transition:width .2s linear}
 
   /* ── headline ── */
-  .say{max-width:640px}
+  .say{max-width:670px}
   .eyebrow{
     display:inline-flex; align-items:center; gap:9px; margin-bottom:22px;
     font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
@@ -173,7 +173,7 @@
   .eyebrow .dot{width:5px; height:5px; border-radius:50%; background:var(--yellow); flex:none}
   h1{
     margin:0; font-weight:800; letter-spacing:-.038em; line-height:1.02;
-    font-size:clamp(38px,5.4vw,72px);
+    font-size:clamp(36px,4.2vw,57px);
   }
   h1 em{font-style:normal; color:var(--yellow)}
   .sub{
@@ -270,10 +270,10 @@
     <!-- HEADLINE -->
     <div class="say">
       <div class="eyebrow"><span class="dot"></span> Long Beach, California</div>
-      <h1>A song about Long Beach,<br>for <em>only</em> Long Beach.</h1>
+      <h1>Made for Long Beach, <br><em>Kept</em> by Long Beach.</h1>
       <p class="sub">
-        Kota wrote it here. It plays here. It isn't on streaming and it never will be —
-        the only way to hear it is through the speaker in front of you.
+        Kota wrote it here. It plays here. It isn't on streaming and it never will be.
+        The only way to hear it is through the speaker in front of you.
       </p>
       <div class="tags">
         <span class="tag on">Not on streaming</span>
@@ -322,7 +322,7 @@
   /* ---------- audio analysis, with a graceful fallback ----------
      Web Audio can't read samples from a file:// media element (it's treated
      as cross-origin and the analyser just returns silence). So we watch for
-     that case and drive the visuals from a synthesised envelope instead —
+     that case and drive the visuals from a synthesised envelope instead;
      the page looks identical either way, opened locally or hosted.        */
   var ctx, analyser, freq, useSim = false, sawSignal = false, playStart = 0;
 
@@ -417,7 +417,7 @@
     if (audio.paused) {
       playStart = performance.now();
       var p = audio.play();
-      if (p && p.catch) p.catch(function(){ /* autoplay policy — user gesture covers us */ });
+      if (p && p.catch) p.catch(function(){ /* autoplay policy; user gesture covers us */ });
       body.classList.add('has-played');
       btn.setAttribute('aria-label', 'Pause Long Beach');
       hint.textContent = 'Now playing in Long Beach';
