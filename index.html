@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Long Beach — Kota The Friend × Bose</title>
+<meta name="description" content="A song that never leaves the city. Long Beach, by Kota The Friend. Plays only through Bose.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0A0B;
+    --ink-2:#111113;
+    --paper:#F4F1EC;
+    --muted:rgba(244,241,236,.52);
+    --muted-2:rgba(244,241,236,.34);
+    --line:rgba(244,241,236,.14);
+    --yellow:#FCDC58;
+    --warm:#FFCE7A;
+    --amp:0;            /* live audio amplitude 0..1 */
+    --maxw:1280px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+    display:flex; flex-direction:column;
+    overflow-x:hidden;
+  }
+
+  /* ambient light in the room */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(60% 50% at 30% 42%, rgba(255,206,122,.055), transparent 70%),
+      radial-gradient(50% 45% at 82% 78%, rgba(120,150,255,.045), transparent 70%);
+  }
+
+  .wrap{width:100%; max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,4vw,56px)}
+
+  /* ─────────── header ─────────── */
+  header{position:relative; z-index:2; padding:clamp(20px,3vw,34px) 0}
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap}
+  .lockup{display:flex; align-items:center; gap:14px}
+  .lockup img{height:17px; width:auto; display:block}
+  .lockup .x{color:var(--muted-2); font-size:13px; font-weight:500}
+  .lockup .kota{
+    font-size:15px; font-weight:800; letter-spacing:-.01em; color:var(--yellow);
+    white-space:nowrap;
+  }
+  .campaign{
+    font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--muted); white-space:nowrap;
+  }
+
+  /* ─────────── main ─────────── */
+  main{position:relative; z-index:2; flex:1; display:flex; align-items:center; padding:clamp(16px,3vw,40px) 0}
+  .grid{
+    display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+    gap:clamp(32px,6vw,88px); align-items:center; width:100%;
+  }
+
+  /* ── speaker stage ── */
+  .stage{display:flex; flex-direction:column; align-items:center}
+  .speaker-btn{
+    position:relative; display:block; width:min(400px,74vw); aspect-ratio:445/463;
+    background:none; border:0; padding:0; margin:0; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transform:scale(calc(1 + var(--amp) * .012));
+    transition:transform .09s ease-out;
+  }
+  .speaker-btn:focus-visible{outline:none}
+  .speaker-btn:focus-visible .speaker{filter:drop-shadow(0 0 0 2px var(--yellow))}
+  .speaker-btn:focus-visible::after{
+    content:""; position:absolute; inset:-14px; border:1.5px solid var(--yellow);
+    border-radius:26px; opacity:.7;
+  }
+
+  /* glow behind = the sound in the air */
+  .glow{
+    position:absolute; left:50%; top:52%; translate:-50% -50%;
+    width:150%; aspect-ratio:1; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,206,122,.30), rgba(255,206,122,.09) 38%, transparent 66%);
+    opacity:calc(.10 + var(--amp) * .85);
+    scale:calc(.86 + var(--amp) * .26);
+    transition:opacity .1s linear, scale .12s ease-out;
+    will-change:opacity, scale;
+  }
+
+  /* pressure rings pushing out of the grille */
+  .rings{position:absolute; inset:0; pointer-events:none; display:none; place-items:center}
+  .is-playing .rings{display:grid}
+  .rings i{
+    position:absolute; width:64%; aspect-ratio:1; border-radius:28%;
+    border:1px solid rgba(255,206,122,.30);
+    animation:emit 3.4s cubic-bezier(.22,.61,.36,1) infinite;
+    opacity:0;
+  }
+  .rings i:nth-child(2){animation-delay:1.13s}
+  .rings i:nth-child(3){animation-delay:2.26s}
+  @keyframes emit{
+    0%  {transform:scale(.72); opacity:0}
+    18% {opacity:calc(.30 + var(--amp) * .45)}
+    100%{transform:scale(2.1); opacity:0}
+  }
+
+  .speaker{position:relative; width:100%; height:100%; display:block; object-fit:contain; z-index:2}
+
+  /* warm light inside the grille, masked to the speaker's own silhouette */
+  .grille-light{
+    position:absolute; inset:0; z-index:3; pointer-events:none;
+    background:radial-gradient(ellipse 62% 40% at 50% 63%, rgba(255,214,140,.95), rgba(255,190,110,.28) 52%, transparent 76%);
+    mix-blend-mode:screen;
+    opacity:calc(var(--amp) * .78);
+    -webkit-mask-image:url("assets/speaker.png"); mask-image:url("assets/speaker.png");
+    -webkit-mask-size:100% 100%; mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    transition:opacity .09s linear;
+    will-change:opacity;
+  }
+
+  /* the affordance sitting exactly on the speaker's real play/pause glyph */
+  .hit{
+    position:absolute; z-index:4; left:47.6%; top:36.7%; translate:-50% -50%;
+    width:15%; aspect-ratio:1; border-radius:50%; pointer-events:none;
+    border:1.5px solid rgba(252,220,88,.85);
+    box-shadow:0 0 0 0 rgba(252,220,88,.45);
+    animation:beckon 2.1s ease-out infinite;
+  }
+  @keyframes beckon{
+    0%  {box-shadow:0 0 0 0 rgba(252,220,88,.42); opacity:1}
+    70% {box-shadow:0 0 0 16px rgba(252,220,88,0); opacity:.85}
+    100%{box-shadow:0 0 0 0 rgba(252,220,88,0); opacity:1}
+  }
+  .has-played .hit{animation:none; opacity:0; transition:opacity .5s ease}
+
+  .hint{
+    margin-top:20px; font-size:11px; font-weight:600; letter-spacing:.15em;
+    text-transform:uppercase; color:var(--yellow); text-align:center;
+    transition:opacity .45s ease; height:14px;
+  }
+  .has-played .hint{opacity:0}
+
+  /* ── track info under the speaker ── */
+  .track{width:min(400px,74vw); margin-top:22px; text-align:center}
+  .track h2{
+    margin:0; font-size:clamp(26px,3.2vw,36px); font-weight:800; letter-spacing:-.035em; line-height:1;
+  }
+  .track .by{
+    margin-top:9px; font-size:13px; font-weight:700; letter-spacing:.04em;
+    color:var(--yellow); text-transform:uppercase;
+  }
+  .meter{
+    margin-top:18px; display:flex; align-items:center; gap:11px;
+    font-variant-numeric:tabular-nums; font-size:11px; font-weight:600;
+    color:var(--muted-2); letter-spacing:.04em;
+  }
+  .bar-track{flex:1; height:2px; background:var(--line); border-radius:2px; overflow:hidden}
+  .bar-fill{height:100%; width:0%; background:var(--yellow); border-radius:2px; transition:width .2s linear}
+
+  /* ── headline ── */
+  .say{max-width:640px}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:9px; margin-bottom:22px;
+    font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  }
+  .eyebrow .dot{width:5px; height:5px; border-radius:50%; background:var(--yellow); flex:none}
+  h1{
+    margin:0; font-weight:800; letter-spacing:-.038em; line-height:1.02;
+    font-size:clamp(38px,5.4vw,72px);
+  }
+  h1 em{font-style:normal; color:var(--yellow)}
+  .sub{
+    margin:26px 0 0; max-width:46ch; font-size:clamp(15px,1.35vw,17px); line-height:1.55; color:var(--muted);
+  }
+  .tags{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px}
+  .tag{
+    font-size:10.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+    padding:7px 12px; border:1px solid var(--line); border-radius:100px; color:var(--muted);
+  }
+  .tag.on{border-color:rgba(252,220,88,.4); color:var(--yellow)}
+
+  /* ─────────── footer / shop ─────────── */
+  footer{position:relative; z-index:2; padding:clamp(22px,3vw,34px) 0 clamp(26px,3vw,40px)}
+  .shop{
+    border-top:1px solid var(--line); padding-top:22px;
+    display:flex; align-items:center; justify-content:space-between; gap:22px; flex-wrap:wrap;
+  }
+  .prod{display:flex; align-items:center; gap:16px; min-width:0}
+  .prod img{width:46px; height:46px; object-fit:contain; flex:none}
+  .prod .meta{min-width:0}
+  .prod .n{font-size:14px; font-weight:700; letter-spacing:-.01em}
+  .prod .c{margin-top:3px; font-size:11px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--muted-2)}
+  .cta{
+    display:inline-flex; align-items:center; gap:10px; flex:none;
+    background:var(--paper); color:var(--ink); text-decoration:none;
+    font-size:13px; font-weight:700; letter-spacing:-.005em;
+    padding:13px 20px; border-radius:100px;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .cta:hover{background:var(--yellow); transform:translateY(-1px)}
+  .cta svg{width:13px; height:13px}
+
+  /* ─────────── responsive ─────────── */
+  @media (max-width:900px){
+    .grid{grid-template-columns:1fr; gap:44px; justify-items:center; text-align:center}
+    h1 br{display:none}          /* let the headline wrap naturally when centred */
+    .say{max-width:620px}
+    .eyebrow{justify-content:center}
+    main{padding:28px 0 8px}
+    .shop{justify-content:center; text-align:center}
+  }
+  @media (max-width:560px){
+    .bar{justify-content:center; gap:14px}
+    .campaign{width:100%; text-align:center}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .rings{display:none !important}
+    .hit{animation:none}
+    .speaker-btn,.glow,.grille-light{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="lockup">
+      <img src="assets/bose-logo-white.png" alt="Bose">
+      <span class="x">×</span>
+      <span class="kota">Kota The Friend</span>
+    </div>
+    <div class="campaign">A song that never leaves the city</div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+
+    <!-- SPEAKER -->
+    <div class="stage" id="stage">
+      <button class="speaker-btn" id="speakerBtn" aria-label="Play Long Beach on the Bose SoundLink Micro">
+        <span class="glow"></span>
+        <span class="rings"><i></i><i></i><i></i></span>
+        <img class="speaker" src="assets/speaker.png" alt="Bose SoundLink Micro speaker in Sandstone">
+        <span class="grille-light"></span>
+        <span class="hit"></span>
+      </button>
+
+      <div class="hint" id="hint">Press play on the speaker</div>
+
+      <div class="track">
+        <h2>Long Beach</h2>
+        <div class="by">Kota The Friend</div>
+        <div class="meter">
+          <span id="cur">0:00</span>
+          <span class="bar-track"><span class="bar-fill" id="fill"></span></span>
+          <span id="dur">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADLINE -->
+    <div class="say">
+      <div class="eyebrow"><span class="dot"></span> Long Beach, California</div>
+      <h1>A song about Long Beach,<br>for <em>only</em> Long Beach.</h1>
+      <p class="sub">
+        Kota wrote it here. It plays here. It isn't on streaming and it never will be —
+        the only way to hear it is through the speaker in front of you.
+      </p>
+      <div class="tags">
+        <span class="tag on">Not on streaming</span>
+        <span class="tag">Long Beach only</span>
+        <span class="tag">Plays through Bose</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap shop">
+    <div class="prod">
+      <img src="assets/speaker.png" alt="">
+      <div class="meta">
+        <div class="n">Bose SoundLink Micro (2nd Gen)</div>
+        <div class="c">Sandstone · The speaker this song lives in</div>
+      </div>
+    </div>
+    <a class="cta" id="shop"
+       href="https://www.bose.com/p/speakers/bose-soundlink-micro-portable-speaker-2nd-gen/SLMC2-SPEAKERWIRELESS.html?dwvar_SLMC2-SPEAKERWIRELESS_color=SANDSTONE"
+       target="_blank" rel="noopener noreferrer">
+      Shop the speaker
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 12L12 4M12 4H6M12 4v6"/>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<audio id="audio" src="assets/longbeach.mp3" preload="metadata"></audio>
+
+<script>
+(function(){
+  var audio   = document.getElementById('audio');
+  var btn     = document.getElementById('speakerBtn');
+  var stage   = document.getElementById('stage');
+  var body    = document.body;
+  var fill    = document.getElementById('fill');
+  var curEl   = document.getElementById('cur');
+  var durEl   = document.getElementById('dur');
+  var hint    = document.getElementById('hint');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- audio analysis, with a graceful fallback ----------
+     Web Audio can't read samples from a file:// media element (it's treated
+     as cross-origin and the analyser just returns silence). So we watch for
+     that case and drive the visuals from a synthesised envelope instead —
+     the page looks identical either way, opened locally or hosted.        */
+  var ctx, analyser, freq, useSim = false, sawSignal = false, playStart = 0;
+
+  function initAudioGraph(){
+    if (ctx) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { useSim = true; return; }
+      ctx = new AC();
+      var src = ctx.createMediaElementSource(audio);
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = .78;
+      src.connect(analyser);
+      analyser.connect(ctx.destination);
+      freq = new Uint8Array(analyser.frequencyBinCount);
+    } catch (e) {
+      useSim = true;
+    }
+  }
+
+  function realAmp(){
+    if (!analyser) return 0;
+    analyser.getByteFrequencyData(freq);
+    var bass = 0, mid = 0, i;
+    for (i = 1;  i < 10; i++) bass += freq[i];
+    for (i = 10; i < 48; i++) mid  += freq[i];
+    bass /= 9 * 255; mid /= 38 * 255;
+    var v = bass * .68 + mid * .32;
+    if (v > 0.004) sawSignal = true;
+    return Math.min(1, v * 1.65);
+  }
+
+  /* a believable envelope: slow swell + pulse, so it reads as music not a loop */
+  function simAmp(t){
+    var v = .40
+          + .26 * Math.sin(t * 2.30)
+          + .16 * Math.sin(t * 5.70 + 1.1)
+          + .11 * Math.sin(t * 11.3 + 2.4)
+          + .07 * Math.sin(t * 0.63);
+    return Math.max(.08, Math.min(1, v));
+  }
+
+  var amp = 0;
+  function frame(){
+    if (!audio.paused) {
+      var target;
+      if (useSim) {
+        target = simAmp(audio.currentTime);
+      } else {
+        target = realAmp();
+        /* nothing came back after a second of playback → fall back */
+        if (!sawSignal && performance.now() - playStart > 1100) {
+          useSim = true;
+          target = simAmp(audio.currentTime);
+        }
+      }
+      amp += (target - amp) * (reduced ? .10 : .28);
+    } else {
+      amp += (0 - amp) * .12;
+    }
+    body.style.setProperty('--amp', amp.toFixed(3));
+
+    if (audio.duration) {
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      curEl.textContent = fmt(audio.currentTime);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function fmt(s){
+    if (!isFinite(s)) return '0:00';
+    var m = Math.floor(s / 60), r = Math.floor(s % 60);
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+
+  function showDuration(){ if (audio.duration) durEl.textContent = fmt(audio.duration); }
+  audio.addEventListener('loadedmetadata', showDuration);
+  audio.addEventListener('durationchange', showDuration);
+  showDuration();   /* metadata may already be in by the time this script runs */
+  audio.addEventListener('ended', function(){
+    stage.classList.remove('is-playing');
+    btn.setAttribute('aria-label', 'Replay Long Beach on the Bose SoundLink Micro');
+  });
+  audio.addEventListener('play',  function(){ stage.classList.add('is-playing'); });
+  audio.addEventListener('pause', function(){ stage.classList.remove('is-playing'); });
+
+  btn.addEventListener('click', function(){
+    initAudioGraph();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+
+    if (audio.paused) {
+      playStart = performance.now();
+      var p = audio.play();
+      if (p && p.catch) p.catch(function(){ /* autoplay policy — user gesture covers us */ });
+      body.classList.add('has-played');
+      btn.setAttribute('aria-label', 'Pause Long Beach');
+      hint.textContent = 'Now playing in Long Beach';
+    } else {
+      audio.pause();
+      btn.setAttribute('aria-label', 'Play Long Beach on the Bose SoundLink Micro');
+    }
+  });
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
