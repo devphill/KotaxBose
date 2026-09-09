@@ -404,8 +404,14 @@
   audio.addEventListener('durationchange', showDuration);
   showDuration();   /* metadata may already be in by the time this script runs */
   audio.addEventListener('ended', function(){
+    /* Reset the page so it invites a second play. Rewinding to 0 also lets the
+       render loop redraw the progress bar empty on its own, instead of us
+       fighting it every frame while currentTime sits at the duration. */
+    audio.currentTime = 0;
     stage.classList.remove('is-playing');
-    btn.setAttribute('aria-label', 'Replay Long Beach on the Bose SoundLink Micro');
+    body.classList.remove('has-played');      /* brings the ring and prompt back */
+    hint.textContent = 'Play it again';
+    btn.setAttribute('aria-label', 'Play Long Beach again on the Bose SoundLink Micro');
   });
   audio.addEventListener('play',  function(){ stage.classList.add('is-playing'); });
   audio.addEventListener('pause', function(){ stage.classList.remove('is-playing'); });
